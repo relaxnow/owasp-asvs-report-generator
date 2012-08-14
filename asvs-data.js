@@ -30,7 +30,25 @@ var ASVS = {
             chapter: 1,
             number: 2,
             levels: ['2A','2B','3','4'],
-            title: ''
+            title: '',
+            annotation: ''
+        }
+    ],
+    riskRanges: [
+        {
+            start: 0,
+            end: 3,
+            title: 'Low'
+        },
+        {
+            start:3,
+            end: 6,
+            title: 'Medium'
+        },
+        {
+            start: 0,
+            end: 3,
+            title: 'High'
         }
     ]
 };

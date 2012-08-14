@@ -1,7 +1,14 @@
 <!DOCTYPE html>
-<html>
+<!-- To change the reporting language, simply set lang so something that is supported -->
+<html lang="nl">
     <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
         <title>Ibuildings OWASP ASVS Report Generator</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width">
+
+        <!-- CSS -->
         <style>
             @font-face {
                 font-family: din;
@@ -16,12 +23,14 @@
             h2.fail {
                 background-color: red;
             }
-            .risk-medium {
-                background-color: yellow;
-            }
         </style>
-        <script>
+        <link rel="stylesheet" href="risk-ratings.css" />
 
+        <!-- JavaScript -->
+        <script>
+            if (typeof localStorage === 'undefined') {
+                alert('Local storage not available, your report contents will not be saved!');
+            }
         </script>
     </head>
     <body>
@@ -32,7 +41,7 @@
             </ul>
         </section>
 
-        <section id="welcome">
+        <section id="welcome" style="display: none">
             <p>Welcome to the Ibuildings OWASP ASVS Report Generator</p>
             <button>Start</button>
         </section>
@@ -94,7 +103,7 @@
                             </tr>
                         </tbody>
                     </table>
-                    Risico: Hoog
+                    Risk: <span data-riskrating="9">Hoog</span>
                     <textarea placeholder="(Optioneel) Verklaring"></textarea>
                 </section>
                 <section id="preview"></section>
@@ -106,7 +115,9 @@
         </section>
 
         <section id="report">
-            <button>Modify</button><button>Restart</button>
+            <header style="text-align: right">
+                <button>Modify</button><button>Restart</button>
+            </header>
             <section>
                 <h1>V1 - Security Architectuur Documentatie Requirements</h1>
                 <section>
@@ -122,7 +133,7 @@
                         Het identificeren van componenten maakt het makkelijker om configuratie mismatches te detecteren.
                     </p>
                     <p>
-                        Risico: <span class="risk-medium">Middelmatig</span>
+                        Risico: <span data-riskrating="6.1">Middelmatig</span>
                     </p>
                     <p>
                         Drupal is een bekend product waar veel scans voor gedaan worden.
