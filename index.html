@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Ibuildings OWASP ASVS Report Generator</title>
+        <style>
+            @font-face {
+                font-family: din;
+                src: url('DIN/DIN Regular.ttf');
+            }
+            *{
+                font-family: din, Helvetica;
+            }
+            h2.pass {
+                background-color: #adff2f;
+            }
+            h2.fail {
+                background-color: red;
+            }
+            .risk-medium {
+                background-color: yellow;
+            }
+        </style>
+        <script>
+
+        </script>
+    </head>
+    <body>
+        <section id="todos" style="font-size: small; display: none">
+            <h1>TODOS</h1>
+            <ul>
+                <li>WYSIWYG</li>
+            </ul>
+        </section>
+
+        <section id="welcome">
+            <p>Welcome to the Ibuildings OWASP ASVS Report Generator</p>
+            <button>Start</button>
+        </section>
+
+        <section id="wizard">
+            <section class="screen">
+                <h1>V1 - Security Architectuur Documentatie Requirements</h1>
+                <h2>Verifieer dat alle applicatie componenten (individueel of )</h2>
+                <p>Onder componenten kunnen losse modules worden verstaan en third party componenten</p>
+                <button>PASS</button><button>FAIL</button>
+                <section class="pass">
+                    <p>Hoe is dit geverifieerd?</p>
+                    <textarea placeholder="Waar kan de documentatie gevonden worden en welke componenten zijn beschreven?"></textarea>
+                    <p class="example">
+                        Op de Confluence pagina:
+                        <a href="https://confluence.ibuildings.nl/X">https://confluence.ibuildings.nl/X</a>
+                        staan de componenten beschreven, de auditor heeft geen onbeschreven componenten kunnen vinden.
+                    </p>
+                </section>
+                <section class="fail">
+                    <p>Waarom is dit niet geverifieerd?</p>
+                    <textarea placeholder="Is er geen documentatie? Of bevat het niet alle componenten?"></textarea>
+                    <table>
+                        <tbody>
+                            <tr>
+                                <th>
+                                    Threat agent factors
+                                </th>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <table>
+                                        <tbody>
+                                            <tr>
+                                                <th>
+                                                    Skill level
+                                                </th>
+                                                <td>
+                                                    <select>
+                                                        <option>0 - Not applicable</option>
+                                                        <option>1 - Security penetration skills</option>
+                                                    </select>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th>Motive</th>
+                                                <td>
+                                                    <select>
+                                                        <option>0 - Not applicable</option>
+                                                        <option>1 - Low or no reward (doing it for kicks)</option>
+                                                        <option>4 - Possible reward</option>
+                                                        <option>9 - $$$$$$</option>
+                                                    </select>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    Risico: Hoog
+                    <textarea placeholder="(Optioneel) Verklaring"></textarea>
+                </section>
+                <section id="preview"></section>
+                <button>Save & Previous</button><button>Previous</button><button>Next</button><button>Save & Next</button><button>Done</button>
+            </section>
+            <section class="screen">
+
+            </section>
+        </section>
+
+        <section id="report">
+            <button>Modify</button><button>Restart</button>
+            <section>
+                <h1>V1 - Security Architectuur Documentatie Requirements</h1>
+                <section>
+                    <h2 class="pass">V1.1 - Alle applicatie componenten zijn geidentifeerd</h2>
+                    <p>Dit is goed want...</p>
+                </section>
+                <section>
+                    <h2 class="fail">V1.2 - Alle componenten die geen onderdeel zijn van de applicatie zijn <strong>niet</strong> geidentificeerd</h2>
+                    <p>
+                        Verwachtte locatie: <a href="https://confluence.ibuildings.nl/X">https://confluence.ibuildings.nl/X</a>
+                    </p>
+                    <p>
+                        Het identificeren van componenten maakt het makkelijker om configuratie mismatches te detecteren.
+                    </p>
+                    <p>
+                        Risico: <span class="risk-medium">Middelmatig</span>
+                    </p>
+                    <p>
+                        Drupal is een bekend product waar veel scans voor gedaan worden.
+                    </p>
+                </section>
+            </section>
+        </section>
+    </body>
+</html>
