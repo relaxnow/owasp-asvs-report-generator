@@ -1,202 +1,236 @@
 <!DOCTYPE html>
 <!-- To change the reporting language, simply set lang so something that is supported -->
-<html lang="nl">
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-        <title>OWASP ASVS Report Generator by Ibuildings</title>
-        <meta name="description" content="">
-        <meta name="viewport" content="width=device-width">
+<html lang="nl" ng-app>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>OWASP ASVS Report Generator by Ibuildings</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width">
 
-        <!-- CSS -->
-        <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.0.4/css/bootstrap-combined.min.css" />
-        <link rel="stylesheet" href="risk-ratings.css" />
+    <!-- CSS -->
+    <link rel="stylesheet"
+          href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.0.4/css/bootstrap-combined.min.css"/>
+    <link rel="stylesheet" href="https://ajax.googleapis.com//ajax/libs/jqueryui/1.8.22/themes/blitzer/jquery-ui.css"/>
+    <link rel="stylesheet" href="risk-ratings.css"/>
 
-        <!-- Reference the theme's stylesheet on the Google CDN -->
-        <link href="https://ajax.googleapis.com//ajax/libs/jqueryui/1.8.22/themes/blitzer/jquery-ui.css" type="text/css" rel="Stylesheet" />
-        <style>
-            @font-face {
-                font-family: din;
-                src: url('DIN/DIN Regular.ttf');
-            }
-            *{
-                font-family: din, Helvetica;
-            }
-            h2.pass {
-                background-color: #adff2f;
-            }
-            h2.fail {
-                background-color: red;
-            }
 
-            footer {
-                font-size: small;
-                text-align: center;
-            }
-        </style>
+    <style>
+        @font-face {
+            font-family: din;
+            src: url('DIN/DIN Regular.ttf');
+        }
 
-        <!-- JavaScript -->
-        <script>
-            if (typeof localStorage === 'undefined') {
-                alert('Local storage not available, your report contents will not be saved!');
-            }
-        </script>
+        * {
+            font-family: din, Helvetica;
+        }
 
-    </head>
-    <body>
-        <section id="todos" style="font-size: small; display: none">
-            <h1>TODOS</h1>
-            <ul>
-                <li>WYSIWYG</li>
-            </ul>
-        </section>
+        h2.pass {
+            background-color: #adff2f;
+        }
 
-        <section id="welcome" style="display: none; text-align: center; margin-top: auto; margin-bottom: auto;" class="hero-unit container">
-            <h1>Welcome to the Ibuildings OWASP ASVS Report Generator</h1>
-            <hr />
-            <button class="btn-large btn-primary">Start</button>
-        </section>
+        h2.fail {
+            background-color: red;
+        }
+        #welcome {
+            text-align: center;
+        }
 
-        <section id="wizard" style="display: none" class="span12">
-            <section class="screen">
-                <h1>V1 - Security Architectuur Documentatie Requirements</h1>
-                <h2>Verifieer dat alle applicatie componenten (individueel of )</h2>
-                <p>Onder componenten kunnen losse modules worden verstaan en third party componenten</p>
+        footer {
+            font-size: small;
+            text-align: center;
+        }
+    </style>
 
-                <button class="btn btn-danger disabled">Reset</button>
+    <!-- JavaScript -->
+    <script>
+        if (typeof localStorage === 'undefined') {
+            alert('Local storage not available, your report contents will not be saved!');
+        }
+    </script>
 
-                <input type="radio" id="statusPass" name="status" value="pass" />
-                <label for="statusPass">PASS</label>
-                <input type="radio" id="statusFail" name="status" value="fail" />
-                <label for="statusFail">FAIL</label>
+</head>
+<body ng-controller="WizardController">
+<section id="todos" style="font-size: small;" class="hide">
+    <h1>TODOS</h1>
+    <ul>
+        <li>WYSIWYG</li>
+    </ul>
+</section>
 
-                <section class="pass">
-                    <p>Hoe is dit geverifieerd?</p>
-                    <textarea cols="80"
-                              rows="5"
-                              placeholder="Waar kan de documentatie gevonden worden en welke componenten zijn beschreven?"></textarea>
-                    <p class="example">
-                        Op de Confluence pagina:
-                        <a href="https://confluence.ibuildings.nl/X">https://confluence.ibuildings.nl/X</a>
-                        staan de componenten beschreven, de auditor heeft geen onbeschreven componenten kunnen vinden.
-                    </p>
-                </section>
-                <section class="fail">
-                    <p>Waarom is dit niet geverifieerd?</p>
-                    <textarea cols="80"
-                              rows="5"
-                              placeholder="Is er geen documentatie? Of bevat het niet alle componenten?"></textarea>
-                    <table>
-                        <tbody>
-                            <tr>
-                                <th>
-                                    Threat agent factors
-                                </th>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <table>
-                                        <tbody>
-                                            <tr>
-                                                <th>
-                                                    Skill level
-                                                </th>
-                                                <td>
-                                                    <select>
-                                                        <option>0 - Not applicable</option>
-                                                        <option>1 - Security penetration skills</option>
-                                                    </select>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <th>Motive</th>
-                                                <td>
-                                                    <select>
-                                                        <option>0 - Not applicable</option>
-                                                        <option>1 - Low or no reward (doing it for kicks)</option>
-                                                        <option>4 - Possible reward</option>
-                                                        <option>9 - $$$$$$</option>
-                                                    </select>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    Risk: <span data-riskrating="9">Hoog</span>
-                    <textarea placeholder="(Optioneel) Verklaring"></textarea>
-                    <button>Show preview</button>
-                </section>
-                <section id="preview"></section>
+<section id="welcome" class="hero-unit container hide">
+    <h1>Welcome to the OWASP ASVS Report Generator</h1>
+    <hr/>
+    <button class="btn-large btn-primary">Start</button>
+</section>
 
-                <button>Save & Previous</button>
-                <button onclick="$(this).parents('section.screen').hide('slide', { direction: 'right' });">Previous</button>
-                <button onclick="$(this).parents('section.screen').hide('slide', { direction: 'left' });">Next</button>
-                <button>Save & Next</button>
-                <button>Done</button>
-            </section>
-            <section class="screen">
+<section id="wizard" class="hide">
+    <header>
+        <button class="btn" ng-click="prev()" ng-class="edittedIsNotFirst()">
+            <i class="icon-arrow-left"></i>
+            Previous
+        </button>
 
-            </section>
-        </section>
+        <button class="btn">Show preview</button>
 
-        <section id="report">
-            <div class="navbar">
-                <div class="navbar-inner">
-                    <div class="container" style="text-align: right">
-                        <button class="btn btn-primary" id="modifyReportButton"><i class="icon-pencil icon-white"></i> Modify</button>
-                        <button class="btn btn-danger" onclick="window.location.reload();">Reset</button>
-                    </div>
-                </div>
-            </div>
-            <section>
-                <h1>V1 - Security Architectuur Documentatie Requirements</h1>
-                <section>
-                    <h2 class="pass">V1.1 - Alle applicatie componenten zijn geidentifeerd</h2>
-                    <p>Dit is goed want...</p>
-                </section>
-                <section>
-                    <h2 class="fail">V1.2 - Alle componenten die geen onderdeel zijn van de applicatie zijn <strong>niet</strong> geidentificeerd</h2>
-                    <p>
-                        Verwachtte locatie: <a href="https://confluence.ibuildings.nl/X">https://confluence.ibuildings.nl/X</a>
-                    </p>
-                    <p>
-                        Het identificeren van componenten maakt het makkelijker om configuratie mismatches te detecteren.
-                    </p>
-                    <p>
-                        Risico: <span data-riskrating="6.1">Middelmatig</span>
-                    </p>
-                    <p>
-                        Drupal is een bekend product waar veel scans voor gedaan worden.
-                    </p>
-                </section>
-            </section>
-        </section>
+        <button class="btn btn-primary" ng-click="next()" ng-class="edittedIsNotLast()">
+            Next
+            <i class="icon-arrow-right icon-white"></i>
+        </button>
+        <button class="btn btn-primary" ng-class="edittedIsLast()" ng-click="done()">Done</button>
+
+        <div class="progress progress-danger">
+            <div class="bar" style="width: {{edittedPercentage()}}%;"></div>
+        </div>
+    </header>
+    <br  style="clear: both" />
+    <section class="screen form-inline" ng-repeat="rule in report.rules" ng-class="rule.showEdit">
+        <header>
+            <h1>V{{rule.chapter.nr}} - {{rule.chapter.title}}</h1>
+
+            <h2>V{{rule.chapter.nr}}.{{rule.nr}} - {{rule.title}}</h2>
+        </header>
+
+        <p class="well">{{rule.annotation}}</p>
+
+        <button class="btn btn-danger" ng-class="rule.enableReset" ng-click="reset(rule)">Reset</button>
+
+        <input type="radio" id="statusPass" name="status" value="pass" ng-click="pass(rule)" />
+        <label for="statusPass">PASS</label>
+        <input type="radio" id="statusFail" name="status" value="fail" ng-click="fail(rule)" />
+        <label for="statusFail">FAIL</label>
 
         <hr />
 
-        <footer>
-            The OWASP ASVS Report Generator has been created by <a href="ibuildings.com">Ibuildings</a>.
-        </footer>
-        <script src="asvs-data.js"></script>
-        <script src="asvs-report.js"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.22/jquery-ui.min.js"></script>
-        <script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.0.4/js/bootstrap.min.js"></script>
-        <script>
-            if (!localStorage.getItem('report')) {
-                $('#report').hide();
-                $('#welcome').show().find('button').click(function() {
-                    $('#welcome').hide();
-                    $('#report').show();
-                    $('#wizard').dialog({ modal: true, width: '100%', height: '1024' });
-                });
-                $('#modifyReportButton').click(function(){
-                    $('#wizard').dialog({ modal: true, width: '100%', height: '1024' });
-                });
-            }
-        </script>
-    </body>
+        <section class="pass" ng-class="rule.showPass">
+            <p>How has this been verified (give a specific instance).</p>
+            <textarea class="span8"
+                      cols="80"
+                      rows="5"
+                      placeholder="{{rule.passed.justifyHelp}}"
+                      ng-model="rule.passed.justify"></textarea>
+
+            <p class="example well">
+                {{rule.passed.justifyExample}}
+            </p>
+        </section>
+        <section class="fail" ng-class="rule.showFail">
+            <p>Why can this not be verified?</p>
+            <textarea class="span8"
+                      cols="80"
+                      rows="5"
+                      placeholder="{{rule.failed.justifyHelp}}"
+                      ng-model="rule.failed.justify"></textarea>
+
+            <p class="example well" ng-class="rule.showExample">
+                {{rule.failed.justifyExample}}
+            </p>
+            <table>
+                <tbody>
+                <tr>
+                    <th>
+                        Threat agent factors
+                    </th>
+                </tr>
+                <tr>
+                    <td>
+                        <table>
+                            <tbody>
+                            <tr>
+                                <th>
+                                    Skill level
+                                </th>
+                                <td>
+                                    <select>
+                                        <option>0 - Not applicable</option>
+                                        <option>1 - Security penetration skills</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Motive</th>
+                                <td>
+                                    <select>
+                                        <option>0 - Not applicable</option>
+                                        <option>1 - Low or no reward (doing it for kicks)</option>
+                                        <option>4 - Possible reward</option>
+                                        <option>9 - $$$$$$</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <dl>
+                <dt>Risk rating</dt>
+                <dd><span data-riskrating="9">High</span></dd>
+            </dl>
+            <textarea class="span8"
+                      cols="80"
+                      rows="5"
+                      placeholder="[Optional] Justification for the risk rating"
+                      ng-model="rule.risk.justify"></textarea>
+        </section>
+        <section id="preview"></section>
+    </section>
+</section>
+
+<section id="report">
+    <div class="navbar">
+        <div class="navbar-inner">
+            <div class="container" style="text-align: right">
+                <button class="btn btn-primary" id="modifyReportButton"><i class="icon-pencil icon-white"></i> Modify
+                </button>
+                <button class="btn btn-danger" onclick="window.location.reload();">Reset</button>
+            </div>
+        </div>
+    </div>
+    <section ng-repeat="chapter in report.chapters">
+        <h1>V{{$index + 1}} - {{chapter}}</h1>
+        <section ng-repeat="rule in report.rules | filter:{chapter.nr: $index+1}">
+            <h2 class="{{getStatusClass(rule)}}">V{{rule.chapter.nr}}.{{rule.nr}} - {{rule.title}}</h2>
+            <div ng-class="hideIfFailed(rule)">
+                <p>{{rule.passed.description}}</p>
+                <p>{{rule.passed.justify}}</p>
+            </div>
+            <div ng-class="hideIfPassed(rule)">
+                <p>{{rule.failed.description}}</p>
+                <p>{{rule.failed.justify}}</p>
+                <p>{{rule.risk.rating}}</p>
+                <p>{{rule.risk.justify}}</p>
+            </div>
+        </section>
+    </section>
+</section>
+
+<hr/>
+
+<footer>
+    The OWASP ASVS Report Generator has been created by <a href="ibuildings.com">Ibuildings</a>.
+</footer>
+<script src="asvs-data.js"></script>
+<script src="asvs-report.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.22/jquery-ui.min.js"></script>
+<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.0.4/js/bootstrap.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.1/angular.min.js"></script>
+<script src="WizardController.js"></script>
+<script>
+    localStorage.removeItem('report');
+    if (!localStorage.getItem('report')) {
+        $('#report').hide();
+        $('#welcome').show().find('button').click(function () {
+            $('#welcome').hide();
+            $('#report').show();
+            $('#wizard').dialog({ modal:true, width:'80%', height:'960'});
+        });
+        $('#modifyReportButton').click(function () {
+            $('#wizard').dialog({ modal:true, width:'80%', height:'960' });
+        });
+    }
+</script>
+</body>
 </html>
