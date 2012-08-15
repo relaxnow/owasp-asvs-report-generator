@@ -1,4 +1,37 @@
-function WizardController($scope) {
+angular.module('asvs', []).
+    /**
+     * Recursively average values in object
+     * @image http://images.wikia.com/transformers/images/b/b9/Ravageboxart.jpg
+     */
+    filter('ravg', function() {
+        "use strict";
+        function collectValues(obj) {
+            var values = [], objKey, value;
+            for (objKey in obj) {
+                // Guard against inherited properties
+                if (!obj.hasOwnProperty(objKey)) {
+                    continue;
+                }
+
+                value = obj[objKey];
+                if (typeof value === 'object') {
+                    values = values.concat(collectValues(value));
+                }
+                else {
+                    values[values.length] = +value;
+                }
+            }
+            return values;
+        }
+
+        return function ravg(obj) {
+            var avg, values = collectValues(obj);
+            avg = values.reduce(function(prev, cur) { return prev + cur; }, 0) / values.length;
+            return Math.floor(avg * 10) / 10;
+        };
+    });
+
+function WizardController($scope, ravgFilter) {
     "use strict";
     function getNewReport() {
         var report = {};
@@ -118,7 +151,22 @@ function WizardController($scope) {
         $('#wizard').dialog('close');
     };
 
+    $scope.getRiskRatingDescription = function(riskFactors) {
+        var riskRating = ravgFilter(riskFactors);
+        var riskRange;
+        for (var i = 0; i < ASVS.riskRanges.length; i++) {
+            riskRange = ASVS.riskRanges[i];
+            if (riskRating >= riskRange.start && riskRating < riskRange.end) {
+                return riskRange.title;
+            }
+        }
+        return 'Unknown';
+    };
+
+
     setTimeout(function() {
         localStorage.setItem('report', JSON.stringify($scope.report));
     }, 10000);
 }
+
+WizardController.$inject = ['$scope','ravgFilter'];

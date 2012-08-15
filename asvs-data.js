@@ -47,6 +47,39 @@ var ASVS = {
                 failed: {
                     nl : ''
                 }
+            },
+            risk: {
+                rating: 6.1,
+                factors: {
+                    likelihood : {
+                        threatAgent : {
+                            skillLevel  : 0,
+                            motive      : 0,
+                            opportunity : 0,
+                            size        : 0
+                        },
+                        vulnerability : {
+                            easeOfDiscovery     : 0,
+                            easeOfExploit       : 0,
+                            awareness           : 0,
+                            intrusionDetection  : 0
+                        }
+                    },
+                    impact: {
+                        business : {
+                            financialDamage : 0,
+                            reputationDamage: 0,
+                            nonCompliance   : 0,
+                            privacyViolation: 0
+                        },
+                        technical : {
+                            lossOfConfidentiality   : 0,
+                            lossOfIntegrity         : 0,
+                            lossOfAvailability      : 0,
+                            lossOfAccountability    : 0
+                        }
+                    }
+                }
             }
         },
         {
@@ -204,7 +237,7 @@ var ASVS = {
             title: 'Low',
             translations: {
                 nl: 'Laag'
-            },
+            }
         },
         {
             start:3,
@@ -215,12 +248,18 @@ var ASVS = {
             }
         },
         {
-            start: 0,
-            end: 3,
+            start: 6,
+            end: 10,
             title: 'High',
             translations: {
                 nl: 'Hoog'
             }
+        }
+    ],
+    riskFactors: [
+        {
+            category: 'Technical Impact',
+            title: 'Loss of confidentiality'
         }
     ]
 };

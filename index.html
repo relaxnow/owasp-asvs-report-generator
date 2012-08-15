@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- To change the reporting language, simply set lang so something that is supported -->
-<html lang="nl" ng-app>
+<html lang="nl" ng-app="asvs">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
@@ -32,6 +32,7 @@
         h2.fail {
             background-color: red;
         }
+
         #welcome {
             text-align: center;
         }
@@ -39,6 +40,10 @@
         footer {
             font-size: small;
             text-align: center;
+        }
+
+        td th {
+            text-align: left;
         }
     </style>
 
@@ -65,117 +70,414 @@
 </section>
 
 <section id="wizard" class="hide">
-    <header>
-        <button class="btn" ng-click="prev()" ng-class="edittedIsNotFirst()">
-            <i class="icon-arrow-left"></i>
-            Previous
-        </button>
+<header>
+    <button class="btn" ng-click="prev()" ng-class="edittedIsNotFirst()">
+        <i class="icon-arrow-left"></i>
+        Previous
+    </button>
 
-        <button class="btn">Show preview</button>
+    <button class="btn btn-primary" ng-click="next()" ng-class="edittedIsNotLast()">
+        Next
+        <i class="icon-arrow-right icon-white"></i>
+    </button>
+    <button class="btn btn-primary" ng-class="edittedIsLast()" ng-click="done()">Done</button>
 
-        <button class="btn btn-primary" ng-click="next()" ng-class="edittedIsNotLast()">
-            Next
-            <i class="icon-arrow-right icon-white"></i>
-        </button>
-        <button class="btn btn-primary" ng-class="edittedIsLast()" ng-click="done()">Done</button>
+    <div class="progress progress-danger">
+        <div class="bar" style="width: {{edittedPercentage()}}%;"></div>
+    </div>
+</header>
+<br style="clear: both"/>
+<section class="screen form-inline" ng-repeat="rule in report.rules" ng-class="rule.showEdit">
+<header>
+    <h1>V{{rule.chapter.nr}} - {{rule.chapter.title}}</h1>
 
-        <div class="progress progress-danger">
-            <div class="bar" style="width: {{edittedPercentage()}}%;"></div>
-        </div>
-    </header>
-    <br  style="clear: both" />
-    <section class="screen form-inline" ng-repeat="rule in report.rules" ng-class="rule.showEdit">
-        <header>
-            <h1>V{{rule.chapter.nr}} - {{rule.chapter.title}}</h1>
+    <h2>V{{rule.chapter.nr}}.{{rule.nr}} - {{rule.title}}</h2>
+</header>
 
-            <h2>V{{rule.chapter.nr}}.{{rule.nr}} - {{rule.title}}</h2>
-        </header>
+<p class="well">{{rule.annotation}}</p>
 
-        <p class="well">{{rule.annotation}}</p>
+<button class="btn btn-danger" ng-class="rule.enableReset" ng-click="reset(rule)">Reset</button>
 
-        <button class="btn btn-danger" ng-class="rule.enableReset" ng-click="reset(rule)">Reset</button>
+<label for="statusPass">
+    <input type="radio" id="statusPass" name="status" value="pass" ng-click="pass(rule)"/>
+    PASS
+</label>
+<label for="statusFail">
+    <input type="radio" id="statusFail" name="status" value="fail" ng-click="fail(rule)"/>
+    FAIL
+</label>
 
-        <input type="radio" id="statusPass" name="status" value="pass" ng-click="pass(rule)" />
-        <label for="statusPass">PASS</label>
-        <input type="radio" id="statusFail" name="status" value="fail" ng-click="fail(rule)" />
-        <label for="statusFail">FAIL</label>
+<hr/>
 
-        <hr />
+<section class="pass" ng-class="rule.showPass">
+    <p>How has this been verified (give a specific instance).</p>
+    <textarea class="span8"
+              cols="80"
+              rows="5"
+              placeholder="{{rule.passed.justifyHelp}}"
+              ng-model="rule.passed.justify"></textarea>
 
-        <section class="pass" ng-class="rule.showPass">
-            <p>How has this been verified (give a specific instance).</p>
-            <textarea class="span8"
-                      cols="80"
-                      rows="5"
-                      placeholder="{{rule.passed.justifyHelp}}"
-                      ng-model="rule.passed.justify"></textarea>
+    <h3>Example:</h3>
 
-            <p class="example well">
-                {{rule.passed.justifyExample}}
-            </p>
-        </section>
-        <section class="fail" ng-class="rule.showFail">
-            <p>Why can this not be verified?</p>
-            <textarea class="span8"
-                      cols="80"
-                      rows="5"
-                      placeholder="{{rule.failed.justifyHelp}}"
-                      ng-model="rule.failed.justify"></textarea>
+    <p class="example well">
+        {{rule.passed.justifyExample}}
+    </p>
+</section>
+<section class="fail" ng-class="rule.showFail">
+<p>Why can this not be verified?</p>
+<textarea class="span8"
+          cols="80"
+          rows="5"
+          placeholder="{{rule.failed.justifyHelp}}"
+          ng-model="rule.failed.justify"></textarea>
 
-            <p class="example well" ng-class="rule.showExample">
-                {{rule.failed.justifyExample}}
-            </p>
+<h3>Example:</h3>
+
+<p class="example well" ng-class="rule.showExample">
+    {{rule.failed.justifyExample}}
+</p>
+<table>
+    <tbody>
+    <tr>
+        <th>Threat agent factors</th>
+        <th>Vulnerability factors</th>
+    </tr>
+    <tr>
+        <td>
             <table>
                 <tbody>
                 <tr>
                     <th>
-                        Threat agent factors
+                        Skill level
                     </th>
+                    <td>
+                        <select ng-model="rule.risk.factors.likelihood.threatAgent.skillLevel">
+                            <option value="0">0 - Not Applicable</option>
+                            <option value="1">1 - Security penetration skills</option>
+                            <option value="2">2</option>
+                            <option value="3">3 - Network and programming skills</option>
+                            <option value="4">4 - Advanced computer user</option>
+                            <option value="5">5</option>
+                            <option value="6">6 - Some technical skills</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9">9 - No Technical skills</option>
+                        </select>
+                    </td>
                 </tr>
                 <tr>
+                    <th>Motive</th>
                     <td>
-                        <table>
-                            <tbody>
-                            <tr>
-                                <th>
-                                    Skill level
-                                </th>
-                                <td>
-                                    <select>
-                                        <option>0 - Not applicable</option>
-                                        <option>1 - Security penetration skills</option>
-                                    </select>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th>Motive</th>
-                                <td>
-                                    <select>
-                                        <option>0 - Not applicable</option>
-                                        <option>1 - Low or no reward (doing it for kicks)</option>
-                                        <option>4 - Possible reward</option>
-                                        <option>9 - $$$$$$</option>
-                                    </select>
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
+                        <select ng-model="rule.risk.factors.likelihood.threatAgent.motive">
+                            <option value="0">0 - Not Applicable</option>
+                            <option value="1">1 - Low or no reward (doing it for kicks)</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4 - Possible reward</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9">9 - $$$$$$</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Opportunity</th>
+                    <td>
+                        <select ng-model="rule.risk.factors.likelihood.threatAgent.opportunity">
+                            <option value="0">0 - Not Applicable</option>
+                            <option value="1">1 - Full access or expensive resources required</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4 - Special access or resources required</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7 - Some access or resources required</option>
+                            <option value="8">8</option>
+                            <option value="9">9 - No access or resources required</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Size</th>
+                    <td>
+                        <select ng-model="rule.risk.factors.likelihood.threatAgent.size">
+                            <option value="0">0 - Not Applicable</option>
+                            <option value="1">1</option>
+                            <option value="2">2 - Developers / System admins</option>
+                            <option value="3">3</option>
+                            <option value="4">4 - Intranet users</option>
+                            <option value="5">5 - Partners</option>
+                            <option value="6">6 - Authenticated users</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9">9 - Anonymous Internet users</option>
+                        </select>
                     </td>
                 </tr>
                 </tbody>
             </table>
-            <dl>
-                <dt>Risk rating</dt>
-                <dd><span data-riskrating="9">High</span></dd>
-            </dl>
-            <textarea class="span8"
-                      cols="80"
-                      rows="5"
-                      placeholder="[Optional] Justification for the risk rating"
-                      ng-model="rule.risk.justify"></textarea>
-        </section>
-        <section id="preview"></section>
-    </section>
+        </td>
+        <td>
+            <table>
+                <tbody>
+                <tr>
+                    <th>Ease of discovery</th>
+                    <td>
+                        <select ng-model="rule.risk.factors.likelihood.vulnerability.easeOfDiscovery">
+                            <option>Not applicable</option>
+                            <option value="0">0 - Not Applicable</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9">9</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Ease of exploit</th>
+                    <td>
+                        <select ng-model="rule.risk.factors.likelihood.vulnerability.easeOfExploit">
+                            <option>Not applicable</option>
+                            <option value="0">0 - Not Applicable</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9">9</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Awareness</th>
+                    <td>
+                        <select ng-model="rule.risk.factors.likelihood.vulnerability.awareness">
+                            <option value="0">0 - Not Applicable</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9">9</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Intrusion detection</th>
+                    <td>
+                        <select ng-model="rule.risk.factors.likelihood.vulnerability.intrusionDetection">
+                            <option value="0">0 - Not Applicable</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9">9</option>
+                        </select>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </td>
+    </tr>
+    </tbody>
+</table>
+<table>
+    <tbody>
+    <tr>
+        <th>Technical Impact</th>
+        <th>Business Impact</th>
+    </tr>
+    <tr>
+        <td>
+            <table>
+                <tbody>
+                <tr>
+                    <th>
+                        Loss of confidentiality
+                    </th>
+                    <td>
+                        <select ng-model="rule.risk.factors.impact.technical.lossOfConfidentiality">
+                            <option>Not applicable</option>
+                            <option value="0">0 - Not Applicable</option>
+                            <option value="1">1 - Security penetration skills</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9">9</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Loss of integrity</th>
+                    <td>
+                        <select ng-model="rule.risk.factors.impact.technical.lossOfIntegrity">
+                            <option>Not applicable</option>
+                            <option value="0">0 - Not Applicable</option>
+                            <option value="1">1 - Low or no reward (doing it for kicks)</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4 - Possible reward</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9">9 - $$$$$$</option>
+
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Loss of availability</th>
+                    <td>
+                        <select ng-model="rule.risk.factors.impact.technical.lossOfAvailability">
+                            <option>Not applicable</option>
+                            <option value="0">0 - Not Applicable</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9">9</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Loss of accountability</th>
+                    <td>
+                        <select ng-model="rule.risk.factors.impact.technical.lossOfAccountability">
+                            <option>Not applicable</option>
+                            <option value="0">0 - Not Applicable</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9">9</option>
+                        </select>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </td>
+        <td>
+            <table>
+                <tbody>
+                <tr>
+                    <th>Financial damage</th>
+                    <td>
+                        <select ng-model="rule.risk.factors.impact.business.financialDamage">
+                            <option>Not applicable</option>
+                            <option value="0">0 - Not Applicable</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9">9</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Reputation damage</th>
+                    <td>
+                        <select ng-model="rule.risk.factors.impact.business.reputationDamage">
+                            <option>Not applicable</option>
+                            <option value="0">0 - Not Applicable</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9">9</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Non-compliance</th>
+                    <td>
+                        <select ng-model="rule.risk.factors.impact.business.nonCompliance">
+                            <option>Not applicable</option>
+                            <option value="0">0 - Not Applicable</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9">9</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Privacy violation</th>
+                    <td>
+                        <select ng-model="rule.risk.factors.impact.business.privacyViolation">
+                            <option>Not applicable</option>
+                            <option value="0">0 - Not Applicable</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9">9</option>
+                        </select>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </td>
+    </tr>
+    </tbody>
+</table>
+<dl>
+    <dt>Risk rating</dt>
+    <dd><span data-riskrating="{{rule.risk.factors | ravg}}">{{getRiskRatingDescription(rule.risk.factors)}}</span></dd>
+</dl>
+<textarea class="span8"
+          cols="80"
+          rows="5"
+          placeholder="[Optional] Justification for the risk rating"
+          ng-model="rule.risk.justify"></textarea>
+</section>
+</section>
 </section>
 
 <section id="report">
@@ -192,14 +494,186 @@
         <h1>V{{$index + 1}} - {{chapter}}</h1>
         <section ng-repeat="rule in report.rules | filter:{chapter.nr: $index+1}">
             <h2 class="{{getStatusClass(rule)}}">V{{rule.chapter.nr}}.{{rule.nr}} - {{rule.title}}</h2>
+
             <div ng-class="hideIfFailed(rule)">
                 <p>{{rule.passed.description}}</p>
+
                 <p>{{rule.passed.justify}}</p>
             </div>
             <div ng-class="hideIfPassed(rule)">
                 <p>{{rule.failed.description}}</p>
+
                 <p>{{rule.failed.justify}}</p>
-                <p>{{rule.risk.rating}}</p>
+
+                <p>
+                <dl>
+                    <dt>Risk</dt>
+                    <dd data-riskrating="{{rule.risk.factors | ravg}}">{{getRiskRatingDescription(rule.risk.factors)}}
+                    </dd>
+                </dl>
+                </p>
+                <p>
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Threat agent factors</th>
+                        <th>Vulnerability factors</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>
+                            <table>
+                                <tbody>
+                                <tr>
+                                    <th>Skill level</th>
+                                    <td>{{rule.risk.factors.likelihood.threatAgent.skillLevel}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Motive</th>
+                                    <td>{{rule.risk.factors.likelihood.threatAgent.motive}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Opportunity</th>
+                                    <td>{{rule.risk.factors.likelihood.threatAgent.opportunity}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Size</th>
+                                    <td>{{rule.risk.factors.likelihood.threatAgent.size}}</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                        <td>
+                            <table>
+                                <tbody>
+                                <tr>
+                                    <th>Ease of discovery</th>
+                                    <td>{{rule.risk.factors.likelihood.vulnerability.easeOfDiscovery}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Ease of exploit</th>
+                                    <td>{{rule.risk.factors.likelihood.vulnerability.easeOfExploit}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Awareness</th>
+                                    <td>{{rule.risk.factors.likelihood.vulnerability.awareness}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Intrusion detection</th>
+                                    <td>{{rule.risk.factors.likelihood.vulnerability.intrusionDetection}}</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                    </tbody>
+                    <tfoot>
+                    <tr>
+                        <th>Average:
+                                    <span data-riskrating="{{rule.risk.factors.likelihood.threatAgent | ravg}}">
+                                        {{rule.risk.factors.likelihood.threatAgent | ravg}}
+                                    </span>
+                        </th>
+                        <th>Average:
+                                    <span data-riskrating="{{rule.risk.factors.likelihood.vulnerability | ravg}}">
+                                        {{rule.risk.factors.likelihood.vulnerability | ravg}}
+                                    </span>
+                        </th>
+                    </tr>
+                    <tr>
+                        <th colspan="2">
+                            Overall likelihood
+                                    <span data-riskrating="{{rule.risk.factors.likelihood | ravg}}">
+                                        {{rule.risk.factors.likelihood | ravg}}
+                                    </span>
+                        </th>
+                    </tr>
+                    </tfoot>
+                </table>
+
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Technical Impact</th>
+                        <th>Business Impact</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>
+                            <table>
+                                <tbody>
+                                <tr>
+                                    <th>Loss of confidentiality</th>
+                                    <td>{{rule.risk.factors.impact.technical.lossOfConfidentiality}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Loss of integrity</th>
+                                    <td>{{rule.risk.factors.impact.technical.lossOfIntegrity}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Loss of availability</th>
+                                    <td>{{rule.risk.factors.impact.technical.lossOfAvailability}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Loss of accountability</th>
+                                    <td>{{rule.risk.factors.impact.technical.lossOfAccountability}}</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                        <td>
+                            <table>
+                                <tbody>
+                                <tr>
+                                    <th>Financial damage</th>
+                                    <td>{{rule.risk.factors.impact.business.financialDamage}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Reputation damage</th>
+                                    <td>{{rule.risk.factors.impact.business.reputationDamage}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Non-compliance</th>
+                                    <td>{{rule.risk.factors.impact.business.nonCompliance}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Privacy violation</th>
+                                    <td>{{rule.risk.factors.impact.business.privacyViolation}}</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                    </tbody>
+                    <tfoot>
+                    <tr>
+                        <th>Average:
+                                    <span data-riskrating="{{rule.risk.factors.impact.technical | ravg}}">
+                                        {{rule.risk.factors.impact.technical | ravg}}
+                                    </span>
+                        </th>
+                        <th>Average:
+                                    <span data-riskrating="{{rule.risk.factors.impact.business | ravg}}">
+                                        {{rule.risk.factors.impact.business | ravg}}
+                                    </span>
+                        </th>
+                    </tr>
+                    <tr>
+                        <th colspan="2">
+                            Overall impact
+                                    <span data-riskrating="{{rule.risk.factors.likelihood | ravg}}">
+                                        {{rule.risk.factors.impact | ravg}}
+                                    </span>
+                        </th>
+                    </tr>
+                    </tfoot>
+                </table>
+                Risk = Likelihood * Impact
+                {{rule.risk.factors | ravg}} = {{rule.risk.factors.likelihood | ravg}} * {{rule.risk.factors.impact |
+                ravg}}
+                </p>
                 <p>{{rule.risk.justify}}</p>
             </div>
         </section>
@@ -209,7 +683,8 @@
 <hr/>
 
 <footer>
-    The OWASP ASVS Report Generator has been created by <a href="ibuildings.com">Ibuildings</a>.
+    The OWASP ASVS Report Generator has been created by <a href="ibuildings.com">Ibuildings</a> using jQuery, jQuery UI
+    Twitter Bootstrap and AngularJS.
 </footer>
 <script src="asvs-data.js"></script>
 <script src="asvs-report.js"></script>
