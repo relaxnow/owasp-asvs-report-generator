@@ -38,10 +38,7 @@ function WizardController($scope, ravgFilter) {
         report.chapters = ASVS.chapters;
         report.rules = ASVS.rules;
         report.rules = report.rules.map(function(rule) {
-            rule.chapter = {
-                nr      : rule.chapter,
-                title   : ASVS.chapters[rule.chapter]
-            };
+            rule.risk = { factors: ASVS.risk.factors };
             rule.showEdit = 'hide';
             rule.showPass = 'hide';
             rule.showFail = 'hide';
@@ -100,7 +97,7 @@ function WizardController($scope, ravgFilter) {
     $scope.edittedIsLast = function() {
         var rule = $scope.getCurrentRule();
         var lastRule = report.rules[report.rules.length - 1];
-        return rule.chapter.nr === lastRule.chapter.nr && rule.nr === lastRule.nr ? '' : 'hide';
+        return rule.chapter === lastRule.chapter && rule.nr === lastRule.nr ? '' : 'hide';
     };
     $scope.edittedIsNotLast = function() {
         var rule = $scope.getCurrentRule();
@@ -109,7 +106,7 @@ function WizardController($scope, ravgFilter) {
     $scope.edittedIsNotFirst = function() {
         var rule = $scope.getCurrentRule();
         var firstRule = report.rules[0];
-        return rule.chapter.nr === firstRule.chapter.nr && rule.nr === firstRule.nr ? 'hide' : '';
+        return rule.chapter === firstRule.chapter && rule.nr === firstRule.nr ? 'hide' : '';
     };
     $scope.edittedPercentage = function() {
         var percentage = 0;
@@ -119,6 +116,11 @@ function WizardController($scope, ravgFilter) {
             }
         });
         return percentage;
+    };
+    $scope.belongsToChapterIndex = function($index) {
+        return function(rule) {
+            return rule.chapter === $index;
+        };
     };
 
     $scope.next = function() {
@@ -154,13 +156,17 @@ function WizardController($scope, ravgFilter) {
     $scope.getRiskRatingDescription = function(riskFactors) {
         var riskRating = ravgFilter(riskFactors);
         var riskRange;
-        for (var i = 0; i < ASVS.riskRanges.length; i++) {
-            riskRange = ASVS.riskRanges[i];
+        for (var i = 0; i < ASVS.risk.ranges.length; i++) {
+            riskRange = ASVS.risk.ranges[i];
             if (riskRating >= riskRange.start && riskRating < riskRange.end) {
                 return riskRange.title;
             }
         }
         return 'Unknown';
+    };
+
+    $scope.getChapterTitle = function(chapter) {
+        return ASVS.chapters[chapter-1];
     };
 
 

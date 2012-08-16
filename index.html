@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- To change the reporting language, simply set lang so something that is supported -->
-<html lang="nl" ng-app="asvs">
+<html lang="nl" ng-app="asvs" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
@@ -9,16 +9,23 @@
     <meta name="viewport" content="width=device-width">
 
     <!-- CSS -->
+
+    <!--CDN versions:-->
     <link rel="stylesheet"
           href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.0.4/css/bootstrap-combined.min.css"/>
     <link rel="stylesheet" href="https://ajax.googleapis.com//ajax/libs/jqueryui/1.8.22/themes/blitzer/jquery-ui.css"/>
+
+    <!--non-CDN versions:
+    <link rel="stylesheet" href="css/bootstrapcdn/twitter-bootstrap/2.0.4/css/bootstrap-combined.min.css"/>
+    <link rel="stylesheet" href="css/googlapis/ajax/libs/jqueryui/1.8.22/themes/blitzer/jquery-ui.css"/>
+    -->
     <link rel="stylesheet" href="risk-ratings.css"/>
 
 
     <style>
         @font-face {
             font-family: din;
-            src: url('DIN/DIN Regular.ttf');
+            src: url('fonts/DIN/DIN Regular.ttf');
         }
 
         * {
@@ -89,9 +96,9 @@
 <br style="clear: both"/>
 <section class="screen form-inline" ng-repeat="rule in report.rules" ng-class="rule.showEdit">
 <header>
-    <h1>V{{rule.chapter.nr}} - {{rule.chapter.title}}</h1>
+    <h1>V{{rule.chapter}} - {{getChapterTitle(rule.chapter)}}</h1>
 
-    <h2>V{{rule.chapter.nr}}.{{rule.nr}} - {{rule.title}}</h2>
+    <h2>V{{rule.chapter}}.{{rule.nr}} - {{rule.title}}</h2>
 </header>
 
 <p class="well">{{rule.annotation}}</p>
@@ -492,8 +499,8 @@
     </div>
     <section ng-repeat="chapter in report.chapters">
         <h1>V{{$index + 1}} - {{chapter}}</h1>
-        <section ng-repeat="rule in report.rules | filter:{chapter.nr: $index+1}">
-            <h2 class="{{getStatusClass(rule)}}">V{{rule.chapter.nr}}.{{rule.nr}} - {{rule.title}}</h2>
+        <section ng-repeat="rule in report.rules | filter:belongsToChapterIndex($index+1)">
+            <h2 class="{{getStatusClass(rule)}}">V{{rule.chapter}}.{{rule.nr}} - {{rule.title}}</h2>
 
             <div ng-class="hideIfFailed(rule)">
                 <p>{{rule.passed.description}}</p>
@@ -670,10 +677,9 @@
                     </tr>
                     </tfoot>
                 </table>
-                Risk = Likelihood * Impact
-                {{rule.risk.factors | ravg}} = {{rule.risk.factors.likelihood | ravg}} * {{rule.risk.factors.impact |
-                ravg}}
-                </p>
+                <p>Risk = Likelihood * Impact</p>
+                <p>{{rule.risk.factors | ravg}} = {{rule.risk.factors.likelihood | ravg}} * {{rule.risk.factors.impact |
+                ravg}}</p>
                 <p>{{rule.risk.justify}}</p>
             </div>
         </section>
@@ -688,10 +694,10 @@
 </footer>
 <script src="asvs-data.js"></script>
 <script src="asvs-report.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.22/jquery-ui.min.js"></script>
-<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.0.4/js/bootstrap.min.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.1/angular.min.js"></script>
+<script src="js/googleapis/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+<script src="js/googleapis/ajax/libs/jqueryui/1.8.22/jquery-ui.min.js"></script>
+<script src="js/googleapis/twitter-bootstrap/2.0.4/js/bootstrap.min.js"></script>
+<script src="js/googleapis/ajax/libs/angularjs/1.0.1/angular.min.js"></script>
 <script src="WizardController.js"></script>
 <script>
     localStorage.removeItem('report');

@@ -37,3 +37,47 @@ ASVS.getColorForRisk = function(riskRating) {
     }
     console.log(count);
 };
+ASVS.parseXml = function() {
+    $.get('asvs.xml', function(xmlDoc) {
+        var rules = [];
+        $(xmlDoc).find('item').each(function(i, itemNode) {
+            var rule = {};
+            var nrs = /V(\d+)\.(\d+)/.exec($(itemNode).attr('id'));
+            rule.chapter = +nrs[1];
+            rule.nr = +nrs[2];
+
+            rule.levels = $(itemNode).
+                find('include:contains("true")').
+                map(function(include) {
+                    return $(this).attr('level')}).
+                map(function() {
+                    switch ("" + this) {
+                        case "1" : return "1A";
+                        case "2" : return "1B";
+                        case "3" : return "2A";
+                        case "4" : return "2B";
+                        case "5" : return "3";
+                        case "6" : return "4";
+                        default: return "" + this;
+                    }
+                    return "" + this;
+                });
+
+            rule.title = $(itemNode).find('description').text();
+            rule.annotation = '';
+            rule.passed = {
+                title: '',
+                description: '',
+                helpJustify: '',
+            };
+            rule.failed = {
+                title: '',
+                description: ''
+            };
+            rules[rules.length] = rule;
+            console.log(rules);
+
+        });
+        console.log(JSON.stringify(rules));
+    });
+};
