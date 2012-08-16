@@ -49,7 +49,7 @@ function WizardController($scope, ravgFilter) {
         return report;
     }
 
-    var report = localStorage && JSON.parse(localStorage.getItem('report'));
+    var report = (typeof localStorage !== 'undefined') && JSON.parse(localStorage.getItem('report'));
     if (!report) {
         report = getNewReport();
     }
@@ -169,10 +169,13 @@ function WizardController($scope, ravgFilter) {
         return ASVS.chapters[chapter-1];
     };
 
-
-    setTimeout(function() {
+    function saveLoop() {
         localStorage.setItem('report', JSON.stringify($scope.report));
-    }, 10000);
+        return true;
+    }
+    if (typeof localStorage !== 'undefined') {
+        setInterval(saveLoop, 10000);
+    }
 }
 
 WizardController.$inject = ['$scope','ravgFilter'];
