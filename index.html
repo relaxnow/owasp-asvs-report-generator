@@ -493,7 +493,7 @@
             <div class="container" style="text-align: right">
                 <button class="btn btn-primary" id="modifyReportButton"><i class="icon-pencil icon-white"></i> Modify
                 </button>
-                <button class="btn btn-danger" onclick="window.location.reload();">Reset</button>
+                <button class="btn btn-danger" id="resetReportButton">Reset</button>
             </div>
         </div>
     </div>
@@ -696,22 +696,27 @@
 <script src="asvs-report.js"></script>
 <script src="js/googleapis/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
 <script src="js/googleapis/ajax/libs/jqueryui/1.8.22/jquery-ui.min.js"></script>
-<script src="js/googleapis/twitter-bootstrap/2.0.4/js/bootstrap.min.js"></script>
+<!--<script src="js/googleapis/twitter-bootstrap/2.0.4/js/bootstrap.min.js"></script>-->
 <script src="js/googleapis/ajax/libs/angularjs/1.0.1/angular.min.js"></script>
 <script src="WizardController.js"></script>
 <script>
-    localStorage.removeItem('report');
-    if (!localStorage.getItem('report')) {
+    if (typeof localStorage === 'undefined' || !localStorage.getItem('report')) {
         $('#report').hide();
         $('#welcome').show().find('button').click(function () {
             $('#welcome').hide();
             $('#report').show();
             $('#wizard').dialog({ modal:true, width:'80%', height:'960'});
         });
-        $('#modifyReportButton').click(function () {
-            $('#wizard').dialog({ modal:true, width:'80%', height:'960' });
-        });
     }
+    $('#modifyReportButton').click(function () {
+        $('#wizard').dialog({ modal:true, width:'80%', height:'960' });
+    });
+    $('#resetReportButton').click(function () {
+        if (typeof localStorage !== 'undefined') {
+            localStorage.removeItem('report');
+        }
+        window.location.reload();
+    });
 </script>
 </body>
 </html>
